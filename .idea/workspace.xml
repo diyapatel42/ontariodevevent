@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0c55b398-74eb-4d66-a650-7e778f4b1d78" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/instrument-client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/events/[slug]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/events/[slug]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/EventCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EventCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ExploreButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ExploreButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/icons/ArrowDown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/ArrowDown.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/icons/Calendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/Calendar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/icons/Monitor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/Monitor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/icons/Time.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/Time.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/icons/location.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7
+}]]></component>
+  <component name="ProjectId" id="398d6QADi2RwlkKcyXUGzQgmZ0N" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "implement-posthog",
+    "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "configurable.group.appearance",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "/Users/diyapatel/WebstormProjects/ontario-dev-events/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/events" />
+      <recent name="$PROJECT_DIR$/public" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-WS-253.29346.242" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0c55b398-74eb-4d66-a650-7e778f4b1d78" name="Changes" comment="" />
+      <created>1767995348307</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1767995348307</updated>
+      <workItem from="1767995349472" duration="796000" />
+      <workItem from="1770081456952" duration="17772000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
