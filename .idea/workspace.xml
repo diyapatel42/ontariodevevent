@@ -5,17 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c55b398-74eb-4d66-a650-7e778f4b1d78" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/instrument-client.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/events/[slug]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/events/[slug]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/EventCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EventCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ExploreButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ExploreButton.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Navbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/icons/ArrowDown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/ArrowDown.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/icons/Calendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/Calendar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/icons/Monitor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/Monitor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/icons/Time.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/icons/Time.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/icons/location.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +20,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="database" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo"><![CDATA[{
@@ -83,7 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1767995348307</updated>
       <workItem from="1767995349472" duration="796000" />
-      <workItem from="1770081456952" duration="17772000" />
+      <workItem from="1770081456952" duration="18137000" />
     </task>
     <servers />
   </component>
