@@ -5,19 +5,24 @@ import Calendar from './icons/Calendar';
 import Time from './icons/Time';
 
 interface Props {
-    title: string
-    date: string
-    location: string
-    description: string
-    ImageURL: string
-    time :string
-    slug:string
+    _id: string;
+    title: string;
+    eventName: string;
+    description: string;
+    date: string;
+    location: string;
+    image?: string;
+    price?: number;
+    organizer?: string;
+    slug: string;
+    time: string;
+    eventurl:string;
 }
-export function EventCard({ title, date, location, description,ImageURL,slug,time }: Props) {
+export function EventCard({ title, date, location, description,image,slug,time,eventurl }: Props) {
     return (
-        <Link href = {'/events/${slug}'} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 max-w-md mx-auto my-4 hover:scale-[1.02] transition-transform duration-200">
+        <Link href = {`/events/${slug}`} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 max-w-md mx-auto my-4 hover:scale-[1.02] transition-transform duration-200">
             <Image
-                src={ImageURL}
+                src={image || '/events/tech-conference-2024.png'}
                 width={500}
                 height={500}
                 alt={slug}
@@ -40,6 +45,7 @@ export function EventCard({ title, date, location, description,ImageURL,slug,tim
                 </ul>
 
             <p className="text-gray-200">{description}</p>
+            <p  className="text-gray-200"> {eventurl}</p>
 
         </Link>
     )
