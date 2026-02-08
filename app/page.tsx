@@ -3,13 +3,14 @@ import {EventCard} from "@/components/EventCard";
 import {IEvent} from "@/database/event.model";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 const Home = async () => {
+    // FIX: Use parentheses, not backticks
     const response = await fetch(`${BASE_URL}/api/events`, {
         cache: 'no-store'
     });
     const data = await response.json();
     const events = data.events || [];
-
 
     return (
         <>
@@ -22,22 +23,21 @@ const Home = async () => {
                 </p>
                 <ExploreButton />
             </section>
-            <section className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center justify-center min-h-screen px-4 max-w-7xl mx-auto">
-                <div className="mt-20 space-y-7">
-                    <h3>Featured Events</h3>
 
-                    <ul className="events">
-                        {events && events.length > 0 && events.map((event: IEvent) => (
-                            <li key={event.title} className="list-none">
-                                <EventCard {...event} />
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+            {/* FIX: Remove the outer grid, just use flex or block */}
+            <section className="relative z-10 px-4 py-20 max-w-7xl mx-auto">
+                <h3 className="text-white text-3xl font-bold mb-8">Featured Events</h3>
+
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {events && events.length > 0 && events.map((event: IEvent) => (
+                        <li key={event._id || event.title} className="list-none">
+                            <EventCard {...event} />
+                        </li>
+                    ))}
+                </ul>
             </section>
         </>
-
-
     )
 }
-export default Home
+
+export default Home;

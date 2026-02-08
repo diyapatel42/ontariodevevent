@@ -5,6 +5,10 @@ import Link from "next/link";
 import { CalendarIcon, MapPinIcon, ClockIcon, UsersIcon, ExternalLinkIcon } from "lucide-react";
 import Event from "@/database/event.model";
 import connectDB from "@/lib/mongodb";
+import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import { EventCard } from "@/components/EventCard";
+import { IEvent } from "@/database/event.model";
+
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
@@ -13,6 +17,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     const event = await Event.findOne({ slug }).lean();
 
     if (!event) notFound();
+
+    // Fetch similar events
+    const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
     const eventDate = new Date(event.date);
     const formattedDate = eventDate.toLocaleDateString("en-US", {
@@ -195,16 +202,16 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                                 </button>
 
                                 {/* Event URL */}
-                                {event.eventurl && (
-                                    <a
-                                        href={event.eventurl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block text-center text-sm text-zinc-400 hover:text-white transition-colors"
+                                {event.eventurl && ( <a
+
+                                    href={event.eventurl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block text-center text-sm text-zinc-400 hover:text-white transition-colors"
                                     >
-                                        Learn more →
+                                    Learn more →
                                     </a>
-                                )}
+                                    )}
                             </div>
 
                             {/* Back link */}
@@ -219,8 +226,28 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 </div>
             </main>
 
+            {/* Similar Events Section */}
+            {similarEvents.length > 0 && (
+            <section className="border-t border-white/5 bg-zinc-950/50">
+                <div className="mx-auto max-w-6xl px-8 py-24 lg:px-12">
+                    <h2 className="text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-12">
+                        Similar Events
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {similarEvents.map((similarEvent: IEvent) => (
+                            <EventCard
+                                key={similarEvent.title}
+                                {...similarEvent}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+            )}
+
             {/* Bottom spacing */}
             <div className="h-32" />
+
         </div>
     );
 }
