@@ -23,8 +23,8 @@ export function EventCard({ title, date, location, description,image,slug,time,e
         <Link href = {`/events/${slug}`} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 max-w-md mx-auto my-4 hover:scale-[1.02] transition-transform duration-200">
             <Image
                 src={image || '/events/tech-conference-2024.png'}
-                width={500}
-                height={500}
+                width={300}
+                height={300}
                 alt={slug}
             />
             <h2 className=" font-semibold mb-2 text-white">{title}</h2>
