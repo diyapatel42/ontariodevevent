@@ -1,86 +1,71 @@
-// app/api/events/route.ts
-import { NextResponse } from 'next/server';
-import clientPromise from "@/lib/mongodb";
+import {NextRequest, NextResponse} from "next/server";
+
+import connectDB from "@/lib/mongodb";
+import Event from '@/database/event.model';
 import { v2 as cloudinary } from 'cloudinary';
 
-// Ensure Cloudinary is configured (usually done here or in a separate config file)
+// Configure Cloudinary - MUST be called before any upload
 cloudinary.config({
-    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// 1. GET Request: Fetches data FROM the database to show in browser/app
-export async function GET() {
+export async function POST(req: NextRequest) {
     try {
-        const client = await clientPromise;
-        const db = client.db("ontario_events");
+        await connectDB();
 
-        // Fetch all events
-        const events = await db.collection("events").find({}).toArray();
+        const formData = await req.formData();
 
-        return NextResponse.json(events);
-    } catch (e: any) {
-        return NextResponse.json({ success: false, error: e.message }, { status: 500 });
-    }
-}
+        let event;
 
-// 2. POST Request: Sends data INTO the database
-export async function POST(request: Request) {
-    try {
-        // Switch to formData to handle both Text and Files
-        const formData = await request.formData();
-
-        // Extract text fields
-        const eventName = formData.get('eventName');
-        const location = formData.get('location');
-
-        // --- VALIDATION STEP ---
-        if (!eventName || !location) {
-            return NextResponse.json(
-                { error: "Validation Failed: 'eventName' and 'location' are required." },
-                { status: 400 }
-            );
+        try {
+            event = Object.fromEntries(formData.entries());
+        } catch (e) {
+            return NextResponse.json({ message: 'Invalid JSON data format'}, { status: 400 })
         }
 
-        // --- IMAGE UPLOAD STEP ---
         const file = formData.get('image') as File;
 
-        if (!file) {
-            return NextResponse.json({ message: 'Image file is required' }, { status: 400 });
-        }
+        if(!file) return NextResponse.json({ message: 'Image file is required'}, { status: 400 })
+
+        let tags = JSON.parse(formData.get('tags') as string);
+        let agenda = JSON.parse(formData.get('agenda') as string);
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
         const uploadResult = await new Promise((resolve, reject) => {
             cloudinary.uploader.upload_stream({ resource_type: 'image', folder: 'DevEvent' }, (error, results) => {
-                if (error) return reject(error);
+                if(error) return reject(error);
+
                 resolve(results);
             }).end(buffer);
         });
 
-        // Construct the final object to save to MongoDB
-        const eventBody: any = {};
+        event.image = (uploadResult as { secure_url: string }).secure_url;
 
-        // Add all text fields from form data to the object
-        formData.forEach((value, key) => {
-            if (key !== 'image') {
-                eventBody[key] = value;
-            }
+        const createdEvent = await Event.create({
+            ...event,
+            tags: tags,
+            agenda: agenda,
         });
 
-        // Add the Cloudinary URL
-        eventBody.image = (uploadResult as { secure_url: string }).secure_url;
+        return NextResponse.json({ message: 'Event created successfully', event: createdEvent }, { status: 201 });
+    } catch (e) {
+        console.error(e);
+        return NextResponse.json({ message: 'Event Creation Failed', error: e instanceof Error ? e.message : 'Unknown'}, { status: 500 })
+    }
+}
 
-        // --- DATABASE INSERTION ---
-        const client = await clientPromise;
-        const db = client.db("ontario_events");
+export async function GET() {
+    try {
+        await connectDB();
 
-        const result = await db.collection("events").insertOne(eventBody);
+        const events = await Event.find().sort({ createdAt: -1 });
 
-        return NextResponse.json({ success: true, result });
-    } catch (e: any) {
-        return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+        return NextResponse.json({ message: 'Events fetched successfully', events }, { status: 200 });
+    } catch (e) {
+        return NextResponse.json({ message: 'Event fetching failed', error: e }, { status: 500 });
     }
 }

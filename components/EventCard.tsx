@@ -4,49 +4,58 @@ import Location from './icons/Location';
 import Calendar from './icons/Calendar';
 import Time from './icons/Time';
 
-interface Props {
-    _id: string;
+interface EventCardProps {
     title: string;
-    eventName: string;
-    description: string;
     date: string;
     location: string;
-    image?: string;
-    price?: number;
-    organizer?: string;
+    description: string;
+    image: string;
     slug: string;
     time: string;
-    eventurl:string;
+    eventurl?: string;
 }
-export function EventCard({ title, date, location, description,image,slug,time,eventurl }: Props) {
+
+export function EventCard({ title, date, location, description, image, slug, time, eventurl }: EventCardProps) {
     return (
-        <Link href = {`/events/${slug}`} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 max-w-md mx-auto my-4 hover:scale-[1.02] transition-transform duration-200">
-            <Image
-                src={image || '/events/tech-conference-2024.png'}
-                width={300}
-                height={300}
-                alt={slug}
-            />
-            <h2 className=" font-semibold mb-2 text-white">{title}</h2>
+        <Link
+            href={`/events/${slug}`}
+            className="group block bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:bg-zinc-900/60 hover:border-white/20 transition-all duration-500 ease-out"
+        >
+            <div className="relative w-full h-56 overflow-hidden">
+                <Image
+                    src={image || '/events/tech-conference-2024.png'}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    alt={slug}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60" />
+            </div>
 
-                <ul className=" text-xls text-gray-300 mb-1 flex flex-col gap-2">
-                    <li className="flex flex-row items-center gap-2">
-                        <Calendar className="text-white w-3 h-3" />
+            <div className="p-8">
+                <h2 className="font-semibold text-white text-2xl mb-6 tracking-tight leading-tight">{title}</h2>
+
+                <div className="space-y-3 mb-6">
+                    <div className="flex items-center gap-3 text-zinc-400 text-sm">
+                        <Calendar className="w-4 h-4 text-zinc-500" />
                         <span>{date}</span>
-                    </li>
-                    <li className="flex flex-row items-center gap-2">
-                        <Location className="text-white w-3 h-3" />
+                    </div>
+                    <div className="flex items-center gap-3 text-zinc-400 text-sm">
+                        <Location className="w-4 h-4 text-zinc-500" />
                         <span>{location}</span>
-                    </li>
-                    <li className="flex flex-row items-center gap-2">
-                        <Time className="text-white w-3 h-3" />
+                    </div>
+                    <div className="flex items-center gap-3 text-zinc-400 text-sm">
+                        <Time className="w-4 h-4 text-zinc-500" />
                         <span>{time}</span>
-                    </li>
-                </ul>
+                    </div>
+                </div>
 
-            <p className="text-gray-200">{description}</p>
-            <p  className="text-gray-200"> {eventurl}</p>
-
+                <p className="text-zinc-300 text-sm leading-relaxed line-clamp-2 mb-4">{description}</p>
+                {eventurl && (
+                    <p className="text-blue-400 text-xs font-medium truncate">
+                        {eventurl.replace('https://', '').replace('http://', '')}
+                    </p>
+                )}
+            </div>
         </Link>
     )
 }

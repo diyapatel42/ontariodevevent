@@ -1,36 +1,16 @@
-'use client';
 import ExploreButton from "@/components/ExploreButton";
 import {EventCard} from "@/components/EventCard";
-import { useEffect, useState } from "react";
+import {IEvent} from "@/database/event.model";
 
-interface Event {
-    _id: string;
-    eventName: string; // The DB field name
-    description: string;
-    date: string;
-    location: string;
-    image: string;     // The DB field name
-    slug: string;
-    time: string;
-    eventurl:string;
-}
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const Home = async () => {
+    const response = await fetch(`${BASE_URL}/api/events`, {
+        cache: 'no-store'
+    });
+    const data = await response.json();
+    const events = data.events || [];
 
-const Home = () => {
 
-    // 3. Create state to hold the data
-    const [events, setEvents] = useState<Event[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    // 4. Fetch the data when the page loads
-    useEffect(() => {
-        fetch('/api/events')
-            .then((res) => res.json())
-            .then((data) => {
-                setEvents(data);
-                setIsLoading(false);
-            })
-            .catch((err) => console.error("Failed to load events", err));
-    }, []);
     return (
         <>
             <section className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
@@ -43,23 +23,17 @@ const Home = () => {
                 <ExploreButton />
             </section>
             <section className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center justify-center min-h-screen px-4 max-w-7xl mx-auto">
-                {events.map((event) => (
-                    <EventCard
+                <div className="mt-20 space-y-7">
+                    <h3>Featured Events</h3>
 
-                        key={event._id}
-                        _id={event._id}
-                        title={event.eventName}     // Mapping DB 'eventName' to Component 'title'
-                        image={event.image}         // Mapping DB 'image' to Component 'image'
-                        description={event.description}
-                        date={event.date}
-                        location={event.location}
-                        time={event.time}
-                        slug={event.slug}
-                        eventName={event.eventName}
-                        eventurl={event.eventurl}
-                    />
-                    ))
-                }
+                    <ul className="events">
+                        {events && events.length > 0 && events.map((event: IEvent) => (
+                            <li key={event.title} className="list-none">
+                                <EventCard {...event} />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </section>
         </>
 
