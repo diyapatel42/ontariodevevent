@@ -1,11 +1,20 @@
+
+
 import ExploreButton from "@/components/ExploreButton";
 import {EventCard} from "@/components/EventCard";
 import {IEvent} from "@/database/event.model";
+import { cacheLife } from 'next/cache';
+
+// Use seconds directly - 3600 seconds = 1 hour
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Home = async () => {
-    // FIX: Use parentheses, not backticks
+    'use cache';
+    cacheLife({
+        revalidate: 3600, // Revalidate every 1 hour
+    });
+
     const response = await fetch(`${BASE_URL}/api/events`, {
         cache: 'no-store'
     });
@@ -24,7 +33,6 @@ const Home = async () => {
                 <ExploreButton />
             </section>
 
-            {/* FIX: Remove the outer grid, just use flex or block */}
             <section className="relative z-10 px-4 py-20 max-w-7xl mx-auto">
                 <h3 className="text-white text-3xl font-bold mb-8">Featured Events</h3>
 
