@@ -7,7 +7,8 @@ import { cacheLife } from 'next/cache';
 
 // Use seconds directly - 3600 seconds = 1 hour
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
 
 const Home = async () => {
     'use cache';
@@ -15,7 +16,7 @@ const Home = async () => {
         revalidate: 3600, // Revalidate every 1 hour
     });
 
-    const response = await fetch(`${BASE_URL}/api/events`, {
+    const response = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/events`, {
         cache: 'no-store'
     });
     const data = await response.json();
