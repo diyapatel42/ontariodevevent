@@ -1,9 +1,8 @@
 
-
+export const dynamic = 'force-dynamic'
 import ExploreButton from "@/components/ExploreButton";
 import {EventCard} from "@/components/EventCard";
 import {IEvent} from "@/database/event.model";
-import { cacheLife } from 'next/cache';
 
 // Use seconds directly - 3600 seconds = 1 hour
 
@@ -11,10 +10,7 @@ const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localho
 
 
 const Home = async () => {
-    'use cache';
-    cacheLife({
-        revalidate: 3600, // Revalidate every 1 hour
-    });
+
 
     const response = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/events`, {
         cache: 'no-store'
@@ -39,7 +35,7 @@ const Home = async () => {
 
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {events && events.length > 0 && events.map((event: IEvent) => (
-                        <li key={event._id || event.title} className="list-none">
+                        <li key={event._id?.toString() || event.title} className="list-none">
                             <EventCard {...event} />
                         </li>
                     ))}

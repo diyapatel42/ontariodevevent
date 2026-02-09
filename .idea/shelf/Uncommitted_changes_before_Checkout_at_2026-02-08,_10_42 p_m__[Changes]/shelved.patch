@@ -1,0 +1,420 @@
+Index: app/page.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\n\nimport ExploreButton from \"@/components/ExploreButton\";\nimport {EventCard} from \"@/components/EventCard\";\nimport {IEvent} from \"@/database/event.model\";\nimport { cacheLife } from 'next/cache';\n\n// Use seconds directly - 3600 seconds = 1 hour\n\nconst NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';\n\n\nconst Home = async () => {\n    'use cache';\n    cacheLife({\n        revalidate: 3600, // Revalidate every 1 hour\n    });\n\n    const response = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/events`, {\n        cache: 'no-store'\n    });\n    const data = await response.json();\n    const events = data.events || [];\n\n    return (\n        <>\n            <section className=\"relative z-10 flex flex-col items-center justify-center min-h-screen px-4\">\n                <h1 className='text-shadow-purple-300 text-green-200 text-6xl text-center'>\n                    Top Tech Events in Ontario\n                </h1>\n                <p className='text-white text-center mt-4 max-w-2xl'>\n                    This is a hub for dev events happening in Ontario\n                </p>\n                <ExploreButton />\n            </section>\n\n            <section className=\"relative z-10 px-4 py-20 max-w-7xl mx-auto\">\n                <h3 className=\"text-white text-3xl font-bold mb-8\">Featured Events</h3>\n\n                <ul className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">\n                    {events && events.length > 0 && events.map((event: IEvent) => (\n                        <li key={event._id || event.title} className=\"list-none\">\n                            <EventCard {...event} />\n                        </li>\n                    ))}\n                </ul>\n            </section>\n        </>\n    )\n}\n\nexport default Home;
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/page.tsx b/app/page.tsx
+--- a/app/page.tsx	(revision e57a91b611c85ec70a1cb83391f8d6938450992f)
++++ b/app/page.tsx	(date 1770608553975)
+@@ -3,7 +3,6 @@
+ import ExploreButton from "@/components/ExploreButton";
+ import {EventCard} from "@/components/EventCard";
+ import {IEvent} from "@/database/event.model";
+-import { cacheLife } from 'next/cache';
+ 
+ // Use seconds directly - 3600 seconds = 1 hour
+ 
+@@ -11,10 +10,7 @@
+ 
+ 
+ const Home = async () => {
+-    'use cache';
+-    cacheLife({
+-        revalidate: 3600, // Revalidate every 1 hour
+-    });
++
+ 
+     const response = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/events`, {
+         cache: 'no-store'
+Index: app/events/[slug]/page.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// app/events/[slug]/page.tsx\nimport { notFound } from \"next/navigation\";\nimport Image from \"next/image\";\nimport Link from \"next/link\";\nimport { CalendarIcon, MapPinIcon, ClockIcon, UsersIcon, ExternalLinkIcon } from \"lucide-react\";\nimport Event from \"@/database/event.model\";\nimport connectDB from \"@/lib/mongodb\";\nimport { getSimilarEventsBySlug } from \"@/lib/actions/event.actions\";\nimport { EventCard } from \"@/components/EventCard\";\nimport { IEvent } from \"@/database/event.model\";\n\n\nexport default async function Page({ params }: { params: Promise<{ slug: string }> }) {\n    const { slug } = await params;\n\n    await connectDB();\n    const event = await Event.findOne({ slug }).lean();\n\n    if (!event) notFound();\n\n    // Fetch similar events\n    const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);\n\n    const eventDate = new Date(event.date);\n    const formattedDate = eventDate.toLocaleDateString(\"en-US\", {\n        weekday: \"long\",\n        month: \"long\",\n        day: \"numeric\",\n        year: \"numeric\",\n    });\n\n    return (\n        <div className=\"min-h-screen bg-black text-white\">\n            {/* Minimalist Hero */}\n            <div className=\"relative h-[85vh] w-full overflow-hidden\">\n                <div className=\"absolute inset-0\">\n                    <Image\n                        src={event.image || \"/events/tech-conference-2024.png\"}\n                        alt={event.title}\n                        fill\n                        className=\"object-cover opacity-40\"\n                        priority\n                    />\n                    <div className=\"absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black\" />\n                </div>\n\n                <div className=\"relative z-10 flex h-full max-w-6xl mx-auto flex-col justify-end px-8 pb-24 lg:px-12\">\n                    {/* Subtle badge */}\n                    <div className=\"mb-8 flex items-center gap-3\">\n                        <span className=\"inline-flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 px-5 py-2 text-xs font-medium tracking-wide text-zinc-400\">\n                            <div className=\"h-1.5 w-1.5 rounded-full bg-emerald-400\" />\n                            {event.mode}\n                        </span>\n                        {event.tags?.slice(0, 2).map((tag: string) => (\n                            <span key={tag} className=\"text-xs font-medium tracking-wide text-zinc-500\">\n                                {tag}\n                            </span>\n                        ))}\n                    </div>\n\n                    {/* Hero title */}\n                    <h1 className=\"text-6xl font-semibold tracking-tight leading-[1.1] lg:text-8xl max-w-5xl mb-8\">\n                        {event.title}\n                    </h1>\n\n                    {/* Subtitle */}\n                    <p className=\"text-xl text-zinc-400 max-w-3xl leading-relaxed font-light\">\n                        {event.overview}\n                    </p>\n                </div>\n            </div>\n\n            {/* Main Content */}\n            <main className=\"mx-auto max-w-6xl px-8 py-20 lg:px-12\">\n                <div className=\"grid gap-20 lg:grid-cols-[1fr_400px]\">\n                    {/* Main Content Column */}\n                    <div className=\"space-y-16 order-2 lg:order-1\">\n                        {/* Description */}\n                        <section>\n                            <h2 className=\"text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-8\">\n                                Overview\n                            </h2>\n                            <div className=\"text-lg leading-relaxed text-zinc-300 space-y-6 font-light\">\n                                {event.description.split('\\n\\n').map((paragraph: string, i: number) => (\n                                    <p key={i}>{paragraph}</p>\n                                ))}\n                            </div>\n                        </section>\n\n                        {/* Agenda */}\n                        {event.agenda && event.agenda.length > 0 && (\n                            <section>\n                                <h2 className=\"text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-8\">\n                                    What to Expect\n                                </h2>\n                                <div className=\"space-y-1\">\n                                    {event.agenda.map((item: string, i: number) => (\n                                        <div\n                                            key={i}\n                                            className=\"group flex items-start gap-6 py-6 border-b border-white/5 last:border-0 transition-colors hover:border-white/10\"\n                                        >\n                                            <span className=\"flex-shrink-0 text-sm font-medium text-zinc-600 group-hover:text-zinc-400 transition-colors w-8\">\n                                                {String(i + 1).padStart(2, '0')}\n                                            </span>\n                                            <span className=\"text-lg text-zinc-300 font-light leading-relaxed\">\n                                                {item}\n                                            </span>\n                                        </div>\n                                    ))}\n                                </div>\n                            </section>\n                        )}\n\n                        {/* Organizer */}\n                        <section className=\"pt-8 border-t border-white/5\">\n                            <h2 className=\"text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-4\">\n                                Organized By\n                            </h2>\n                            <p className=\"text-2xl font-light text-white\">\n                                {event.organizer}\n                            </p>\n                        </section>\n                    </div>\n\n                    {/* Sidebar Info Card (Sticky) */}\n                    <div className=\"order-1 lg:order-2\">\n                        <div className=\"lg:sticky lg:top-24 space-y-6\">\n                            {/* Glass card */}\n                            <div className=\"rounded-3xl bg-zinc-900/50 backdrop-blur-2xl border border-white/10 p-10 space-y-8\">\n                                {/* Event Details */}\n                                <div className=\"space-y-6\">\n                                    <div className=\"flex items-start gap-4\">\n                                        <div className=\"flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center\">\n                                            <CalendarIcon className=\"h-5 w-5 text-zinc-400\" />\n                                        </div>\n                                        <div className=\"flex-1 min-w-0\">\n                                            <p className=\"text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1\">\n                                                Date\n                                            </p>\n                                            <p className=\"text-sm text-white font-light\">\n                                                {formattedDate}\n                                            </p>\n                                        </div>\n                                    </div>\n\n                                    <div className=\"flex items-start gap-4\">\n                                        <div className=\"flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center\">\n                                            <ClockIcon className=\"h-5 w-5 text-zinc-400\" />\n                                        </div>\n                                        <div className=\"flex-1 min-w-0\">\n                                            <p className=\"text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1\">\n                                                Time\n                                            </p>\n                                            <p className=\"text-sm text-white font-light\">\n                                                {event.time}\n                                            </p>\n                                        </div>\n                                    </div>\n\n                                    <div className=\"flex items-start gap-4\">\n                                        <div className=\"flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center\">\n                                            <MapPinIcon className=\"h-5 w-5 text-zinc-400\" />\n                                        </div>\n                                        <div className=\"flex-1 min-w-0\">\n                                            <p className=\"text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1\">\n                                                Location\n                                            </p>\n                                            <p className=\"text-sm text-white font-light\">\n                                                {event.venue}\n                                            </p>\n                                            <p className=\"text-xs text-zinc-500 mt-1\">\n                                                {event.location}\n                                            </p>\n                                        </div>\n                                    </div>\n\n                                    <div className=\"flex items-start gap-4\">\n                                        <div className=\"flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center\">\n                                            <UsersIcon className=\"h-5 w-5 text-zinc-400\" />\n                                        </div>\n                                        <div className=\"flex-1 min-w-0\">\n                                            <p className=\"text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1\">\n                                                Audience\n                                            </p>\n                                            <p className=\"text-sm text-white font-light\">\n                                                {event.audience}\n                                            </p>\n                                        </div>\n                                    </div>\n                                </div>\n\n                                {/* Divider */}\n                                <div className=\"h-px bg-gradient-to-r from-transparent via-white/10 to-transparent\" />\n\n                                {/* CTA Button */}\n                                <button className=\"group w-full relative overflow-hidden rounded-2xl bg-white py-4 text-base font-medium text-black transition-all duration-300 hover:shadow-2xl hover:shadow-white/20 active:scale-[0.98]\">\n                                    <span className=\"relative z-10 flex items-center justify-center gap-2\">\n                                        Register Now\n                                        <ExternalLinkIcon className=\"h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5\" />\n                                    </span>\n                                    <div className=\"absolute inset-0 bg-gradient-to-r from-zinc-100 to-white opacity-0 group-hover:opacity-100 transition-opacity\" />\n                                </button>\n\n                                {/* Event URL */}\n                                {event.eventurl && ( <a\n\n                                    href={event.eventurl}\n                                    target=\"_blank\"\n                                    rel=\"noopener noreferrer\"\n                                    className=\"block text-center text-sm text-zinc-400 hover:text-white transition-colors\"\n                                    >\n                                    Learn more →\n                                    </a>\n                                    )}\n                            </div>\n\n                            {/* Back link */}\n                            <Link\n                                href=\"/\"\n                                className=\"flex items-center justify-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors py-4\"\n                            >\n                                ← Back to all events\n                            </Link>\n                        </div>\n                    </div>\n                </div>\n            </main>\n\n            {/* Similar Events Section */}\n            {similarEvents.length > 0 && (\n            <section className=\"border-t border-white/5 bg-zinc-950/50\">\n                <div className=\"mx-auto max-w-6xl px-8 py-24 lg:px-12\">\n                    <h2 className=\"text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-12\">\n                        Similar Events\n                    </h2>\n                    <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8\">\n                        {similarEvents.map((similarEvent: IEvent) => (\n                            <EventCard\n                                key={similarEvent.title}\n                                {...similarEvent}\n                            />\n                        ))}\n                    </div>\n                </div>\n            </section>\n            )}\n\n            {/* Bottom spacing */}\n            <div className=\"h-32\" />\n\n        </div>\n    );\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/events/[slug]/page.tsx b/app/events/[slug]/page.tsx
+--- a/app/events/[slug]/page.tsx	(revision e57a91b611c85ec70a1cb83391f8d6938450992f)
++++ b/app/events/[slug]/page.tsx	(date 1770608185111)
+@@ -2,24 +2,29 @@
+ import { notFound } from "next/navigation";
+ import Image from "next/image";
+ import Link from "next/link";
+-import { CalendarIcon, MapPinIcon, ClockIcon, UsersIcon, ExternalLinkIcon } from "lucide-react";
+-import Event from "@/database/event.model";
+-import connectDB from "@/lib/mongodb";
+-import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
++import {
++    CalendarIcon,
++    MapPinIcon,
++    ClockIcon,
++    UsersIcon,
++    ExternalLinkIcon,
++} from "lucide-react";
++
+ import { EventCard } from "@/components/EventCard";
++import { getEventPageData } from "@/lib/events.cached";
+ import { IEvent } from "@/database/event.model";
+ 
+-
+-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+-    const { slug } = await params;
++export default async function Page({
++                                       params,
++                                   }: {
++    params: { slug: string };
++}) {
++    const { slug } = params;
+ 
+-    await connectDB();
+-    const event = await Event.findOne({ slug }).lean();
++    const data = await getEventPageData(slug);
++    if (!data) notFound();
+ 
+-    if (!event) notFound();
+-
+-    // Fetch similar events
+-    const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
++    const { event, similarEvents } = data;
+ 
+     const eventDate = new Date(event.date);
+     const formattedDate = eventDate.toLocaleDateString("en-US", {
+@@ -45,50 +50,45 @@
+                 </div>
+ 
+                 <div className="relative z-10 flex h-full max-w-6xl mx-auto flex-col justify-end px-8 pb-24 lg:px-12">
+-                    {/* Subtle badge */}
+                     <div className="mb-8 flex items-center gap-3">
+-                        <span className="inline-flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 px-5 py-2 text-xs font-medium tracking-wide text-zinc-400">
+-                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+-                            {event.mode}
+-                        </span>
++            <span className="inline-flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 px-5 py-2 text-xs font-medium tracking-wide text-zinc-400">
++              <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
++                {event.mode}
++            </span>
+                         {event.tags?.slice(0, 2).map((tag: string) => (
+                             <span key={tag} className="text-xs font-medium tracking-wide text-zinc-500">
+-                                {tag}
+-                            </span>
++                {tag}
++              </span>
+                         ))}
+                     </div>
+ 
+-                    {/* Hero title */}
+                     <h1 className="text-6xl font-semibold tracking-tight leading-[1.1] lg:text-8xl max-w-5xl mb-8">
+                         {event.title}
+                     </h1>
+ 
+-                    {/* Subtitle */}
+                     <p className="text-xl text-zinc-400 max-w-3xl leading-relaxed font-light">
+                         {event.overview}
+                     </p>
+                 </div>
+             </div>
+ 
+-            {/* Main Content */}
+             <main className="mx-auto max-w-6xl px-8 py-20 lg:px-12">
+                 <div className="grid gap-20 lg:grid-cols-[1fr_400px]">
+-                    {/* Main Content Column */}
+                     <div className="space-y-16 order-2 lg:order-1">
+-                        {/* Description */}
+                         <section>
+                             <h2 className="text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-8">
+                                 Overview
+                             </h2>
+                             <div className="text-lg leading-relaxed text-zinc-300 space-y-6 font-light">
+-                                {event.description.split('\n\n').map((paragraph: string, i: number) => (
+-                                    <p key={i}>{paragraph}</p>
+-                                ))}
++                                {event.description
++                                    .split("\n\n")
++                                    .map((paragraph: string, i: number) => (
++                                        <p key={i}>{paragraph}</p>
++                                    ))}
+                             </div>
+                         </section>
+ 
+-                        {/* Agenda */}
+-                        {event.agenda && event.agenda.length > 0 && (
++                        {event.agenda?.length > 0 && (
+                             <section>
+                                 <h2 className="text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-8">
+                                     What to Expect
+@@ -97,21 +97,20 @@
+                                     {event.agenda.map((item: string, i: number) => (
+                                         <div
+                                             key={i}
+-                                            className="group flex items-start gap-6 py-6 border-b border-white/5 last:border-0 transition-colors hover:border-white/10"
++                                            className="group flex items-start gap-6 py-6 border-b border-white/5 last:border-0 hover:border-white/10"
+                                         >
+-                                            <span className="flex-shrink-0 text-sm font-medium text-zinc-600 group-hover:text-zinc-400 transition-colors w-8">
+-                                                {String(i + 1).padStart(2, '0')}
+-                                            </span>
+-                                            <span className="text-lg text-zinc-300 font-light leading-relaxed">
+-                                                {item}
+-                                            </span>
++                      <span className="w-8 text-sm text-zinc-600">
++                        {String(i + 1).padStart(2, "0")}
++                      </span>
++                                            <span className="text-lg text-zinc-300 font-light">
++                        {item}
++                      </span>
+                                         </div>
+                                     ))}
+                                 </div>
+                             </section>
+                         )}
+ 
+-                        {/* Organizer */}
+                         <section className="pt-8 border-t border-white/5">
+                             <h2 className="text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-4">
+                                 Organized By
+@@ -122,102 +121,40 @@
+                         </section>
+                     </div>
+ 
+-                    {/* Sidebar Info Card (Sticky) */}
+                     <div className="order-1 lg:order-2">
+                         <div className="lg:sticky lg:top-24 space-y-6">
+-                            {/* Glass card */}
+                             <div className="rounded-3xl bg-zinc-900/50 backdrop-blur-2xl border border-white/10 p-10 space-y-8">
+-                                {/* Event Details */}
+                                 <div className="space-y-6">
+-                                    <div className="flex items-start gap-4">
+-                                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+-                                            <CalendarIcon className="h-5 w-5 text-zinc-400" />
+-                                        </div>
+-                                        <div className="flex-1 min-w-0">
+-                                            <p className="text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1">
+-                                                Date
+-                                            </p>
+-                                            <p className="text-sm text-white font-light">
+-                                                {formattedDate}
+-                                            </p>
+-                                        </div>
+-                                    </div>
+-
+-                                    <div className="flex items-start gap-4">
+-                                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+-                                            <ClockIcon className="h-5 w-5 text-zinc-400" />
+-                                        </div>
+-                                        <div className="flex-1 min-w-0">
+-                                            <p className="text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1">
+-                                                Time
+-                                            </p>
+-                                            <p className="text-sm text-white font-light">
+-                                                {event.time}
+-                                            </p>
+-                                        </div>
+-                                    </div>
+-
+-                                    <div className="flex items-start gap-4">
+-                                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+-                                            <MapPinIcon className="h-5 w-5 text-zinc-400" />
+-                                        </div>
+-                                        <div className="flex-1 min-w-0">
+-                                            <p className="text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1">
+-                                                Location
+-                                            </p>
+-                                            <p className="text-sm text-white font-light">
+-                                                {event.venue}
+-                                            </p>
+-                                            <p className="text-xs text-zinc-500 mt-1">
+-                                                {event.location}
+-                                            </p>
+-                                        </div>
+-                                    </div>
+-
+-                                    <div className="flex items-start gap-4">
+-                                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+-                                            <UsersIcon className="h-5 w-5 text-zinc-400" />
+-                                        </div>
+-                                        <div className="flex-1 min-w-0">
+-                                            <p className="text-xs font-medium tracking-wider uppercase text-zinc-500 mb-1">
+-                                                Audience
+-                                            </p>
+-                                            <p className="text-sm text-white font-light">
+-                                                {event.audience}
+-                                            </p>
+-                                        </div>
+-                                    </div>
++                                    <Info icon={<CalendarIcon />} label="Date" value={formattedDate} />
++                                    <Info icon={<ClockIcon />} label="Time" value={event.time} />
++                                    <Info
++                                        icon={<MapPinIcon />}
++                                        label="Location"
++                                        value={event.venue}
++                                        sub={event.location}
++                                    />
++                                    <Info icon={<UsersIcon />} label="Audience" value={event.audience} />
+                                 </div>
+ 
+-                                {/* Divider */}
+-                                <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+-
+-                                {/* CTA Button */}
+-                                <button className="group w-full relative overflow-hidden rounded-2xl bg-white py-4 text-base font-medium text-black transition-all duration-300 hover:shadow-2xl hover:shadow-white/20 active:scale-[0.98]">
+-                                    <span className="relative z-10 flex items-center justify-center gap-2">
+-                                        Register Now
+-                                        <ExternalLinkIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+-                                    </span>
+-                                    <div className="absolute inset-0 bg-gradient-to-r from-zinc-100 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
++                                <button className="w-full rounded-2xl bg-white py-4 text-black">
++                                    Register Now
+                                 </button>
+ 
+-                                {/* Event URL */}
+-                                {event.eventurl && ( <a
+-
+-                                    href={event.eventurl}
+-                                    target="_blank"
+-                                    rel="noopener noreferrer"
+-                                    className="block text-center text-sm text-zinc-400 hover:text-white transition-colors"
++                                {event.eventurl && (
++                                    <a
++                                        href={event.eventurl}
++                                        target="_blank"
++                                        rel="noopener noreferrer"
++                                        className="block text-center text-sm text-zinc-400 hover:text-white"
+                                     >
+-                                    Learn more →
++                                        Learn more →
+                                     </a>
+-                                    )}
++                                )}
+                             </div>
+ 
+-                            {/* Back link */}
+                             <Link
+                                 href="/"
+-                                className="flex items-center justify-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors py-4"
++                                className="block text-center text-sm text-zinc-500 hover:text-white py-4"
+                             >
+                                 ← Back to all events
+                             </Link>
+@@ -226,28 +163,45 @@
+                 </div>
+             </main>
+ 
+-            {/* Similar Events Section */}
+             {similarEvents.length > 0 && (
+-            <section className="border-t border-white/5 bg-zinc-950/50">
+-                <div className="mx-auto max-w-6xl px-8 py-24 lg:px-12">
+-                    <h2 className="text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-12">
+-                        Similar Events
+-                    </h2>
+-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+-                        {similarEvents.map((similarEvent: IEvent) => (
+-                            <EventCard
+-                                key={similarEvent.title}
+-                                {...similarEvent}
+-                            />
+-                        ))}
+-                    </div>
+-                </div>
+-            </section>
++                <section className="border-t border-white/5 bg-zinc-950/50">
++                    <div className="mx-auto max-w-6xl px-8 py-24 lg:px-12">
++                        <h2 className="text-sm font-semibold tracking-widest uppercase text-zinc-500 mb-12">
++                            Similar Events
++                        </h2>
++                        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
++                            {similarEvents.map((e: IEvent) => (
++                                <EventCard key={e.slug} {...e} />
++                            ))}
++                        </div>
++                    </div>
++                </section>
+             )}
++        </div>
++    );
++}
+ 
+-            {/* Bottom spacing */}
+-            <div className="h-32" />
+-
++function Info({
++                  icon,
++                  label,
++                  value,
++                  sub,
++              }: {
++    icon: React.ReactNode;
++    label: string;
++    value: string;
++    sub?: string;
++}) {
++    return (
++        <div className="flex gap-4">
++            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400">
++                {icon}
++            </div>
++            <div>
++                <p className="text-xs uppercase text-zinc-500">{label}</p>
++                <p className="text-sm text-white">{value}</p>
++                {sub && <p className="text-xs text-zinc-500">{sub}</p>}
++            </div>
+         </div>
+     );
+-}
+\ No newline at end of file
++}
+Index: lib/events.cached.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/events.cached.ts b/lib/events.cached.ts
+new file mode 100644
+--- /dev/null	(date 1770608307238)
++++ b/lib/events.cached.ts	(date 1770608307238)
+@@ -0,0 +1,25 @@
++import { unstable_cache } from "next/cache";
++import connectDB from "@/lib/mongodb";
++import Event from "@/database/event.model";
++import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
++import { IEvent } from "@/database/event.model";
++
++export const getEventPageData = unstable_cache(
++    async (slug: string) => {
++        await connectDB();
++
++        const event = await Event.findOne({ slug }).lean<IEvent | null>();
++        if (!event) return null;
++
++        const similarEvents = await getSimilarEventsBySlug(slug);
++
++        return {
++            event,
++            similarEvents,
++        };
++    },
++    ["event-page"],
++    {
++        revalidate: 300, // cache for 5 minutes
++    }
++);
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"0c55b398-74eb-4d66-a650-7e778f4b1d78\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/app/page.tsx\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/app/page.tsx\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"TypeScript File\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 7\n}</component>\n  <component name=\"ProjectId\" id=\"398d6QADi2RwlkKcyXUGzQgmZ0N\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\n    \"RunOnceActivity.git.unshallow\": \"true\",\n    \"RunOnceActivity.typescript.service.memoryLimit.init\": \"true\",\n    \"com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1\": \"true\",\n    \"git-widget-placeholder\": \"main\",\n    \"javascript.preferred.runtime.type.id\": \"node\",\n    \"js.debugger.nextJs.config.created.client\": \"true\",\n    \"js.debugger.nextJs.config.created.server\": \"true\",\n    \"junie.onboarding.icon.badge.shown\": \"true\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.detected.package.tslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"settings.editor.selected.configurable\": \"configurable.group.appearance\",\n    \"to.speed.mode.migration.done\": \"true\",\n    \"ts.external.directory.path\": \"/Users/diyapatel/WebstormProjects/ontario-dev-events/node_modules/typescript/lib\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"RecentsManager\">\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/public/events\" />\n      <recent name=\"$PROJECT_DIR$/public\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"npm.Next.js: server-side\">\n    <configuration name=\"Next.js: debug client-side\" type=\"JavascriptDebugType\" uri=\"http://localhost:3000/\">\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"Next.js: server-side\" type=\"js.build_tools.npm\">\n      <package-json value=\"$PROJECT_DIR$/package.json\" />\n      <command value=\"run\" />\n      <scripts>\n        <script value=\"dev\" />\n      </scripts>\n      <node-interpreter value=\"project\" />\n      <envs />\n      <method v=\"2\" />\n    </configuration>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-WS-253.29346.242\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"0c55b398-74eb-4d66-a650-7e778f4b1d78\" name=\"Changes\" comment=\"\" />\n      <created>1767995348307</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1767995348307</updated>\n      <workItem from=\"1767995349472\" duration=\"796000\" />\n      <workItem from=\"1770081456952\" duration=\"17772000\" />\n      <workItem from=\"1770520343981\" duration=\"6064000\" />\n      <workItem from=\"1770081456952\" duration=\"18137000\" />\n      <workItem from=\"1770580191295\" duration=\"12550000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"XDebuggerManager\">\n    <breakpoint-manager>\n      <breakpoints>\n        <line-breakpoint enabled=\"true\" type=\"javascript\">\n          <url>file://$PROJECT_DIR$/database/event.model.ts</url>\n          <line>103</line>\n          <properties lambdaOrdinal=\"-1\" />\n          <option name=\"timeStamp\" value=\"1\" />\n        </line-breakpoint>\n        <line-breakpoint enabled=\"true\" type=\"javascript\">\n          <url>file://$PROJECT_DIR$/database/event.model.ts</url>\n          <line>105</line>\n          <properties lambdaOrdinal=\"-1\" />\n          <option name=\"timeStamp\" value=\"2\" />\n        </line-breakpoint>\n        <line-breakpoint enabled=\"true\" type=\"javascript\">\n          <url>file://$PROJECT_DIR$/database/event.model.ts</url>\n          <line>106</line>\n          <properties lambdaOrdinal=\"-1\" />\n          <option name=\"timeStamp\" value=\"3\" />\n        </line-breakpoint>\n      </breakpoints>\n    </breakpoint-manager>\n  </component>\n  <component name=\"github-copilot-workspace\">\n    <instructionFileLocations>\n      <option value=\".github/instructions\" />\n    </instructionFileLocations>\n    <promptFileLocations>\n      <option value=\".github/prompts\" />\n    </promptFileLocations>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision e57a91b611c85ec70a1cb83391f8d6938450992f)
++++ b/.idea/workspace.xml	(date 1770608307253)
+@@ -5,7 +5,9 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="0c55b398-74eb-4d66-a650-7e778f4b1d78" name="Changes" comment="">
++      <change afterPath="$PROJECT_DIR$/lib/events.cached.ts" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/app/events/[slug]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/events/[slug]/page.tsx" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
