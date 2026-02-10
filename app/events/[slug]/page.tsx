@@ -17,9 +17,9 @@ import { IEvent } from "@/database/event.model";
 export default async function Page({
                                        params,
                                    }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
-    const { slug } = params;
+    const { slug } = await params;
 
     const data = await getEventPageData(slug);
     if (!data) notFound();
